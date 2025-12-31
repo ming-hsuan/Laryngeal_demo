@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>喉部 BMP Demo - Launch</title>
+</head>
+<body>
+  <p>Launching SMART app...</p>
+
+  <!-- SMART on FHIR JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.js"></script>
+
+  <script>
+    // TODO：把這裡換成你在 THAS 註冊 App 拿到的 client_id
+    const CLIENT_ID = "YOUR_THAS_CLIENT_ID";
+
+    FHIR.oauth2.authorize({
+      client_id: CLIENT_ID,
+      // THAS 是 EHR launch，iss / launch 會由 Sandbox 自己帶在 URL 上，不用自己填
+      scope: "launch openid fhirUser patient/*.read",
+      // 這裡用相對路徑即可（代表 launch.html 同一層的 index.html）
+      redirectUri: "index.html"
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>AI-assisted Laryngeal Image Parameter Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
+
+  <style>
+    :root{
+      --bg:#f3f6fb;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --brand:#2563eb;
+      --brand2:#1d4ed8;
+      --soft:#f9fafb;
+    }
+
+    *{ box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body{
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    #cch-root{
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 24px 16px;
+    }
+    .cch-shell{
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .app-card{
+      border-radius: 18px;
+      border: 1px solid rgba(17,24,39,.06);
+      overflow: visible;
+      background: var(--card);
+    }
+
+    .card-header{
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      border-bottom: 1px solid rgba(17,24,39,.06);
+      padding: 1.1rem 1.25rem 1.15rem 1.25rem;
+    }
+
+    .app-header{
+      text-align:center;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .app-title{
+      font-size: 1.9rem;
+      font-weight: 900;
+      letter-spacing: 0.01em;
+      margin-bottom: .15rem;
+    }
+    .app-subtitle{
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: .55rem;
+    }
+    .badge-soft{
+      border: 1px solid rgba(17,24,39,.10);
+      background: #fff;
+      color: #374151;
+      font-weight: 700;
+    }
+
+    /* Stepper */
+    .stepper{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.05rem;
+    }
+    .stepper-item{
+      display:flex;
+      align-items:center;
+      min-width:0;
+    }
+    .stepper-circle{
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 900;
+      border: 2px solid #cbd2e1;
+      color:#6b7b93;
+      background:#fff;
+    }
+    .stepper-label{
+      margin-left: .55rem;
+      font-weight: 800;
+      color:#9aa5b1;
+      white-space: nowrap;
+    }
+    .stepper-line{
+      width: 68px;
+      height: 2px;
+      background: #d8e2f2;
+      border-radius: 999px;
+    }
+    .stepper-item.active .stepper-circle{
+      border-color: var(--brand);
+      background: var(--brand);
+      color:#fff;
+    }
+    .stepper-item.active .stepper-label{
+      color: var(--brand);
+    }
+
+    .card-body{ padding: 1.25rem; }
+
+    /* Section cards */
+    .section-card{
+      border: 1px solid rgba(17,24,39,.08);
+      border-radius: 14px;
+      background:#fff;
+      padding: 1rem 1rem .25rem 1rem;
+      margin-bottom: 1rem;
+    }
+    .section-title{
+      font-size: .92rem;
+      font-weight: 900;
+      color:#374151;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+      margin-bottom: .95rem;
+    }
+
+    /* ✅ 讓 Patient ID 與框同一行，並「字尾 → 框線」加大距離 */
+    .section-card .form-group{
+      margin-bottom: 1.15rem;     /* 保留你喜歡的行距 */
+      display: flex;
+      align-items: center;
+      gap: 18px;                 /* ✅ 核心：文字尾端 → 框線（水平距離） */
+    }
+    .section-card .form-group label{
+      margin: 0;
+      font-weight: 800;
+      color:#374151;
+      font-size: .95rem;
+      white-space: nowrap;
+      min-width: 132px;
+    }
+    .section-card .form-group .form-control{
+      flex: 1 1 auto;
+      width: auto;
+      border-radius: 10px;
+      border-color: rgba(17,24,39,.14);
+      padding-top: .5rem;
+      padding-bottom: .5rem;
+
+      padding-left: .82rem;      /* ✅ 框線 → 123（內距）只多一點點 */
+      padding-right: .82rem;
+    }
+
+    @media (max-width: 575.98px){
+      .section-card .form-group{
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .section-card .form-group label{ min-width: 0; }
+      .section-card .form-group .form-control{ width: 100%; }
+    }
+
+    .btn-primary{
+      border-radius: 999px;
+      font-weight: 900;
+      padding-left: 1.8rem;
+      padding-right: 1.8rem;
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #fff !important;          
+    }
+    
+    .btn-primary:hover,
+    .btn-primary:focus,
+    .btn-primary:active,
+    .btn-primary.active{
+      background: var(--brand2);
+      border-color: var(--brand2);
+      color: #fff !important;          
+    }
+    
+    .btn-primary:focus{
+      box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, .25);
+    }
+
+    .cch-topbar{
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      width: 100% !important;
+      flex-wrap: nowrap !important;
+      margin-bottom: .5rem;
+    }
+    .cch-topbar #backBtn,
+    .cch-topbar #downloadReportBtn{
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+    .cch-topbar #downloadReportBtn{
+      margin-left: auto !important; 
+    }
+
+    /* Step 2 */
+    .report-hero{
+      border: 1px solid rgba(17,24,39,.08);
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      padding: 1rem 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .report-title{
+      font-size: 1.55rem;
+      font-weight: 900;
+      margin-bottom: .25rem;
+    }
+    .report-meta{
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .meta-grid{
+      margin-top: .85rem;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: .55rem .75rem;
+    }
+    @media (min-width: 768px){
+      .meta-grid{ grid-template-columns: 1fr 1fr; }
+    }
+    .kv{
+      display:flex;
+      gap:.55rem;
+      align-items:baseline;
+      padding: .45rem .6rem;
+      border: 1px dashed rgba(17,24,39,.16);
+      border-radius: 12px;
+      background: rgba(255,255,255,.85);
+    }
+    .kv .k{ font-weight: 900; min-width: 140px; color:#374151; }
+    .kv .v{ font-weight: 700; color:#111827; word-break: break-word; }
+
+    .asset-card{
+      border: 1px solid rgba(17,24,39,.08);
+      border-radius: 14px;
+      background:#fff;
+      overflow:hidden;
+      height: 100%;
+    }
+    .asset-head{
+      padding:.8rem .9rem;
+      border-bottom: 1px solid rgba(17,24,39,.06);
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: .75rem;
+      background:#fff;
+    }
+    .asset-head h5{
+      margin:0;
+      font-size: 1.28rem;
+      font-weight: 900;
+    }
+    .asset-body{
+      padding: .75rem .85rem .9rem .85rem;
+      background: var(--soft);
+    }
+
+    .media-box{
+      border: 1px solid rgba(17,24,39,.10);
+      border-radius: 12px;
+      background:#fff;
+      overflow:hidden;
+      min-height: 220px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 8px;
+    }
+    .media-box.pdf-box{ padding: 0; }
+
+    .media-placeholder{
+      color:#6b7280;
+      font-weight: 800;
+      text-align:center;
+      padding: 18px 12px;
+    }
+
+    #previewImage, #aiSummaryImage{
+      max-width: 100%;
+      height: auto;
+      display:none;
+      border-radius: 10px;
+      background:#fff;
+    }
+
+    #aiPdfFrame{
+      width: 100%;
+      height: 760px;
+      border: 0;
+      background:#fff;
+      display:none;
+    }
+
+    /* Preview Modal */
+    .cch-modal{
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.70);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 9999;
+    }
+    .cch-modal-inner{
+      width: 100%;
+      max-width: 980px;
+      height: calc(100vh - 36px);
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 18px 60px rgba(0,0,0,.35);
+      display: flex;
+      flex-direction: column;
+    }
+    .cch-modal-bar{
+      padding: 10px 12px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid rgba(17,24,39,.08);
+      background:#fff;
+    }
+    .cch-modal-title{
+      margin:0;
+      font-weight: 900;
+      font-size: .98rem;
+      color:#111827;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .cch-modal-actions{
+      display:flex;
+      align-items:center;
+      gap: .5rem;
+      flex-shrink: 0;
+    }
+    .cch-modal-body{
+      flex: 1;
+      background: #0b1020;
+      padding: 10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    #reportPreviewFrame{
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background:#fff;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="cch-root">
+    <div class="cch-shell">
+      <div class="app-card card shadow-sm">
+        <div class="card-header">
+          <div class="app-header">
+            <div class="app-title">AI-assisted Laryngeal Image Parameter Calculator</div>
+            <div class="app-subtitle">Changhua Christian Hospital · SMART on FHIR Demo</div>
+            <div>
+              <span class="badge badge-pill badge-primary">Demo</span>
+              <span class="badge badge-pill badge-soft ml-1">Binary</span>
+              <span class="badge badge-pill badge-soft ml-1">DocumentReference</span>
+            </div>
+          </div>
+
+          <div class="stepper">
+            <div class="stepper-item active" id="step1-indicator">
+              <div class="stepper-circle">1</div>
+              <div class="stepper-label">Patient &amp; Image</div>
+            </div>
+            <div class="stepper-line"></div>
+            <div class="stepper-item" id="step2-indicator">
+              <div class="stepper-circle">2</div>
+              <div class="stepper-label">AI Analysis Report</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- Step 1 -->
+          <div id="step1-view">
+            <div class="alert alert-info py-2 mb-3" id="loadStatus">
+              Loading demo AI reports from THAS...
+            </div>
+
+            <form id="metaForm">
+              <div class="section-card">
+                <div class="section-title">Patient information</div>
+
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="patientId">Patient ID</label>
+                    <input type="text" class="form-control" id="patientId" placeholder="Enter patient ID" required>
+                  </div>
+                  <div class="form-group col-md-8">
+                    <label for="patientName">Patient Name</label>
+                    <input type="text" class="form-control" id="patientName" placeholder="Enter patient name" required>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="patientSex">Patient Sex</label>
+                    <select id="patientSex" class="form-control" required>
+                      <option value="">Select sex</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="patientAge">Patient Age</label>
+                    <input type="number" class="form-control" id="patientAge" placeholder="Age" min="0" max="120" required>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="examDate">Examination Date</label>
+                    <input type="date" class="form-control" id="examDate" required>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-card">
+                <div class="section-title">AI model &amp; test image</div>
+
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="modelSelect">Select Model</label>
+                    <select id="modelSelect" class="form-control" required disabled>
+                      <option value="">Loading models...</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="imageSelect">Select Test Image</label>
+                    <select id="imageSelect" class="form-control" required disabled>
+                      <option value="">Select a model first</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-2 pb-2">
+                  <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Submit</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Step 2 -->
+          <div id="step2-view" style="display:none;">
+            <!-- ✅ 左 Back、右 Download，且 Download 貼齊整排最右邊 -->
+            <div class="cch-topbar">
+              <button id="backBtn" class="btn btn-link px-0">&laquo; Back to input</button>
+              <button id="downloadReportBtn" class="btn btn-sm btn-outline-primary" type="button">
+                Download PDF
+              </button>
+            </div>
+
+            <div class="report-hero">
+              <div class="report-title">AI Analysis Report</div>
+              <div class="report-meta">Generated from THAS FHIR R4 DocumentReference + Binary</div>
+
+              <div class="meta-grid">
+                <div class="kv"><div class="k">Patient Name</div><div class="v" id="infoName"></div></div>
+                <div class="kv"><div class="k">Sex / Age</div><div class="v" id="infoSexAge"></div></div>
+                <div class="kv"><div class="k">Examination Date</div><div class="v" id="infoExamDate"></div></div>
+                <div class="kv"><div class="k">Model / Image</div><div class="v"><span id="infoModel"></span> · <span id="infoImage"></span></div></div>
+              
+                <div class="kv"><div class="k">Inference Run ID</div><div class="v" id="infoRunId"></div></div>
+                <div class="kv"><div class="k">Input SHA-256</div><div class="v" id="infoSha256"></div></div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-6 mb-3">
+                <div class="asset-card">
+                  <div class="asset-head"><h5>Original Laryngeal Image</h5></div>
+                  <div class="asset-body">
+                    <div class="media-box">
+                      <div class="media-placeholder" id="rawPlaceholder">尚未載入（Submit 後顯示）</div>
+                      <img id="previewImage" alt="Laryngeal image">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-6 mb-3">
+                <div class="asset-card">
+                  <div class="asset-head"><h5>AI Summary Image</h5></div>
+                  <div class="asset-body">
+                    <div class="media-box">
+                      <div class="media-placeholder" id="pngPlaceholder">尚未載入（Submit 後顯示）</div>
+                      <img id="aiSummaryImage" alt="AI summary">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="asset-card mt-1">
+              <div class="asset-head">
+                <h5>AI Report (PDF)</h5>
+                <a id="aiPdfOpen" class="btn btn-sm btn-outline-secondary" href="#" target="_blank"
+                   style="display:none; margin-left: 12px;">
+                  Open / Print PDF
+                </a>
+              </div>
+
+              <div class="asset-body">
+                <div class="media-box pdf-box" style="min-height: 360px;">
+                  <div class="media-placeholder" id="pdfPlaceholder">尚未載入（Submit 後顯示）</div>
+                  <iframe id="aiPdfFrame" title="AI PDF report"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Download PDF Preview Modal -->
+  <div class="cch-modal" id="reportModal" aria-hidden="true">
+    <div class="cch-modal-inner">
+      <div class="cch-modal-bar">
+        <h6 class="cch-modal-title" id="reportModalTitle">Preview: Download PDF</h6>
+        <div class="cch-modal-actions">
+          <button class="btn btn-sm btn-outline-secondary" type="button" id="reportModalClose">Close</button>
+          <button class="btn btn-sm btn-primary" type="button" id="reportModalDownload">Download</button>
+        </div>
+      </div>
+      <div class="cch-modal-body">
+        <iframe id="reportPreviewFrame" title="Report preview"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- SMART JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.js"></script>
+
+  <!-- libs for "Download PDF (preview first)" -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+
+  <script src="app.js"></script>
+</body>
+</html>
