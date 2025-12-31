@@ -11,7 +11,7 @@ const RAW_BINARY_SYSTEM = "https://cch.org.tw/fhir/larynx-demo/raw-binary-id";
 // For contest demo: this endpoint can "look up" precomputed results by (model + rawBinaryId) or (model + sha256).
 // Replace with your deployed URL, e.g. "https://your-demo-infer.onrender.com"
 
-const INFER_API_BASE = "http://127.0.0.1:50123";
+const INFER_API_BASE = "https://laryngeal-demo-infer-api.onrender.com";
 
 
 // ------------------------ UI helpers ------------------------
