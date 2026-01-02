@@ -151,10 +151,10 @@
 
     /* ✅ 讓 Patient ID 與框同一行，並「字尾 → 框線」加大距離 */
     .section-card .form-group{
-      margin-bottom: 1.15rem;     /* 保留你喜歡的行距 */
+      margin-bottom: 1.15rem;
       display: flex;
       align-items: center;
-      gap: 18px;                 /* ✅ 核心：文字尾端 → 框線（水平距離） */
+      gap: 18px;
     }
     .section-card .form-group label{
       margin: 0;
@@ -171,8 +171,7 @@
       border-color: rgba(17,24,39,.14);
       padding-top: .5rem;
       padding-bottom: .5rem;
-
-      padding-left: .82rem;      /* ✅ 框線 → 123（內距）只多一點點 */
+      padding-left: .82rem;
       padding-right: .82rem;
     }
 
@@ -193,18 +192,16 @@
       padding-right: 1.8rem;
       background: var(--brand);
       border-color: var(--brand);
-      color: #fff !important;          
+      color: #fff !important;
     }
-    
     .btn-primary:hover,
     .btn-primary:focus,
     .btn-primary:active,
     .btn-primary.active{
       background: var(--brand2);
       border-color: var(--brand2);
-      color: #fff !important;          
+      color: #fff !important;
     }
-    
     .btn-primary:focus{
       box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, .25);
     }
@@ -223,7 +220,7 @@
       flex: 0 0 auto;
     }
     .cch-topbar #downloadReportBtn{
-      margin-left: auto !important; 
+      margin-left: auto !important;
     }
 
     /* Step 2 */
@@ -388,6 +385,10 @@
       background:#fff;
       border-radius: 12px;
     }
+
+    /* Debug details (collapsed by default) */
+    details.debug-details > summary { cursor: pointer; user-select: none; }
+    details.debug-details[open] > summary { color: var(--brand); }
   </style>
 </head>
 
@@ -489,7 +490,6 @@
 
           <!-- Step 2 -->
           <div id="step2-view" style="display:none;">
-            <!-- ✅ 左 Back、右 Download，且 Download 貼齊整排最右邊 -->
             <div class="cch-topbar">
               <button id="backBtn" class="btn btn-link px-0">&laquo; Back to input</button>
               <button id="downloadReportBtn" class="btn btn-sm btn-outline-primary" type="button">
@@ -506,9 +506,6 @@
                 <div class="kv"><div class="k">Sex / Age</div><div class="v" id="infoSexAge"></div></div>
                 <div class="kv"><div class="k">Examination Date</div><div class="v" id="infoExamDate"></div></div>
                 <div class="kv"><div class="k">Model / Image</div><div class="v"><span id="infoModel"></span> · <span id="infoImage"></span></div></div>
-              
-                <div class="kv"><div class="k">Inference Run ID</div><div class="v" id="infoRunId"></div></div>
-                <div class="kv"><div class="k">Input SHA-256</div><div class="v" id="infoSha256"></div></div>
               </div>
             </div>
 
@@ -553,6 +550,29 @@
                   <iframe id="aiPdfFrame" title="AI PDF report"></iframe>
                 </div>
               </div>
+            </div>
+
+            <!-- Debug（預設隱藏，放頁面最下方） -->
+            <div class="container my-3">
+              <details class="debug-details">
+                <summary class="text-muted">顯示技術資訊（Debug）</summary>
+
+                <div class="mt-3 p-3 border rounded bg-white">
+                  <div class="meta-grid">
+                    <div class="kv">
+                      <div class="k">Inference Run ID</div>
+                      <div class="v" id="infoRunId"></div>
+                    </div>
+                    <div class="kv">
+                      <div class="k">Input SHA-256</div>
+                      <div class="v" id="infoSha256" style="word-break: break-all;"></div>
+                    </div>
+                  </div>
+                  <div class="text-muted small mt-2">
+                    （此區塊僅供測試與除錯；展示時可保持收合）
+                  </div>
+                </div>
+              </details>
             </div>
           </div>
         </div>
